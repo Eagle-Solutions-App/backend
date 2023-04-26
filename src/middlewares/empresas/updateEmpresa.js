@@ -1,10 +1,10 @@
-const { Empresa, Op } = require("../../db");
+const { Empresa, Op, Usuario } = require("../../db");
 
 const updateEmpresa = async (req, res, next) => {
   try {
     let { nombre, descripcion, email, clave, bloqueo } = req.body;
     const id = req.params.id;
-    const idEmpresa = await Empresa.findAll({ where: { id: id } });
+    const idEmpresa = await Empresa.findByPk(id);
     if (idEmpresa.lenght !== 0) {
       await Empresa.update(
         {
@@ -16,9 +16,17 @@ const updateEmpresa = async (req, res, next) => {
         },
         { where: { id: id } }
       );
+      if(bloqueo){
+        const usuarios = await Usuario.findAll({where:{EmpresaId: 1}});
+      usuarios.forEach(async u => {
+        await u.update({
+          bloqueo:bloqueo
+        })
+      });
+      }
       req.body.resultado = {
         status: "200",
-        respuesta: `El Empresa ${idEmpresa[0].nombre} se ah actualizado exitosamente`,
+        respuesta: `El Empresa ${idEmpresa.nombre} se ah actualizado exitosamente`,
       };
       next();
     } else {
