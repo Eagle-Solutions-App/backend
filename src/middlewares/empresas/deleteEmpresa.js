@@ -1,4 +1,4 @@
-const { Empresa, Op } = require("../../db");
+const { Empresa, Usuario, Op } = require("../../db");
 
 const deleteEmpresa = async (req, res, next) => {
   try {
@@ -8,11 +8,16 @@ const deleteEmpresa = async (req, res, next) => {
       throw new Error(`No existe la Empresa con el ID: ${id}`);
     }
     if (empresa.id > 0) {
+      const usuarios = await Usuario.findAll({where:{EmpresaId: 1}});
+      usuarios.forEach(async u => {
+        await u.destroy()
+      });
       await Empresa.destroy({ where: { id: empresa.id } });
       req.body.eliminado = {
         status: 200,
         resultado: `La Empresa ${empresa.nombre} ah sido eliminado`,
       };
+
       next();
     } else {
       throw new Error(`no existe la Empresa 1con esa ID: ${id}`);

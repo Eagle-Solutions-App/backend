@@ -20,8 +20,9 @@ const updateDeposito = async (req, res, next) => {
         { where: { id: id } }
       );
       if(tipoDepositoID){
+        const deposit = await Deposito.findByPk(id);
         const nuevoTipoDeposito = await TipoDeposito.findByPk(tipoDepositoID)
-        await depositoActualizado.setTipoDeposito(nuevoTipoDeposito);
+        await deposit.setTipoDeposito(nuevoTipoDeposito);
       }
       req.body.resultado = {
         status: "200",
