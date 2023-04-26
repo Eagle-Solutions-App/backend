@@ -6,6 +6,7 @@ const categoria = require("./json/categorias.json");
 const subcategoria = require("./json/subcategorias.json");
 const producto = require("./json/productos.json");
 const tipoSuscripcion = require("./json/tipoSuscripcion.json");
+const usuario = require("./json/usuarios.json");
 const {
   Rol,
   TipoDeposito,
@@ -150,6 +151,22 @@ async function fnRelProdSubCat() {
   });
 }
 
+async function fnSuperAdmin(){
+  console.log(usuario)
+  for(const sp of usuario){
+    
+    const user = await Usuario.create({
+      nombre: sp.nombre,
+      apellido: sp.apellido,
+      email:sp.email,
+      clave:functionHash(sp.clave),
+      imagen: sp.imagen,
+      bloqueo: sp.bloqueo
+    });
+    const rol = await Rol.findByPk(1);
+    await user.setRol(rol)
+  }
+}
 module.exports = {
   fnRols,
   fnTipoDepositos,
@@ -160,4 +177,5 @@ module.exports = {
   fnRelProdSubCat,
   fnTipoSuscripcion,
   fnProducto,
+  fnSuperAdmin,
 };

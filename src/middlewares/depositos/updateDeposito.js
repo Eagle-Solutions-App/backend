@@ -1,10 +1,21 @@
-const { Deposito, TipoDeposito } = require("../../db");
+const { Deposito, TipoDeposito, Usuario } = require("../../db");
 
 const updateDeposito = async (req, res, next) => {
   try {
-    const { nombre, calle, altura, ciudad, provincia, pais, descripcion, observaciones, tipoDepositoID } = req.body;
+    const {
+      nombre,
+      calle,
+      altura,
+      ciudad,
+      provincia,
+      pais,
+      descripcion,
+      observaciones,
+      tipoDepositoID,
+      usuarioResponsableID,
+    } = req.body;
     const id = req.params.id;
-    const deposito = await Deposito.findAll({ where: { id } });
+    const deposito = await Deposito.findByPk(id);
     if (deposito.lenght !== 0) {
       const depositoActualizado = await Deposito.update(
         {
@@ -15,18 +26,24 @@ const updateDeposito = async (req, res, next) => {
           provincia: provincia || deposito.provincia,
           pais: pais || deposito.pais,
           descripcion: descripcion || deposito.descripcion,
-          observaciones: observaciones || deposito.observaciones
+          observaciones: observaciones || deposito.observaciones,
         },
         { where: { id: id } }
       );
-      if(tipoDepositoID){
+      if (tipoDepositoID) {
         const deposit = await Deposito.findByPk(id);
-        const nuevoTipoDeposito = await TipoDeposito.findByPk(tipoDepositoID)
+        const nuevoTipoDeposito = await TipoDeposito.findByPk(tipoDepositoID);
         await deposit.setTipoDeposito(nuevoTipoDeposito);
+      }
+      if (usuarioResponsableID) {
+        const usuario = await Usuario.findOne({
+          where: { [Op.and]: [{ id: usuarioResponsableID },{rol:{[Op.or]: ["Responsable de Deposito", "Administrador"]}, }] },
+        });
+        await deposito.addUsuario(usuario);
       }
       req.body.resultado = {
         status: "200",
-        respuesta: `el deposito ${nombre} se ah actualizado exitosamente`,
+        respuesta: `el deposito ${deposito.nombre} se ah actualizado exitosamente`,
       };
       next();
     } else {
