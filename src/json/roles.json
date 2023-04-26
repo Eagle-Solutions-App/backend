@@ -12,6 +12,9 @@
         "rol":"Responsable de Compras"
     },
     {
+        "rol":"Jefe de Obra"
+    },
+    {
         "rol":"Responsable de Logistica"
     }
 ]
