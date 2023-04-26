@@ -1,4 +1,4 @@
-const { Deposito, Empresa, Producto, TipoDeposito } = require("../../db");
+const { Deposito, Empresa, Producto, TipoDeposito, Usuario } = require("../../db");
 
 const allDepositos = async (req, res, next) => {
   try {
@@ -6,13 +6,13 @@ const allDepositos = async (req, res, next) => {
     if(empresaId){
       req.body.allDepositos = await Deposito.findAll({
         where:{EmpresaId:empresaId},
-        include: [TipoDeposito,Empresa, Producto],
+        include: [Usuario, TipoDeposito,Empresa, Producto],
         order: [["nombre","ASC"]],
       });
       next();
     }else{
       req.body.allDepositos = await Deposito.findAll({
-        include: [TipoDeposito,Empresa, Producto],
+        include: [Usuario, TipoDeposito,Empresa, Producto],
         order: [["nombre","ASC"]],
       });
       next();
